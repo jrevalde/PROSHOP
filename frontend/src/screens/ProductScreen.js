@@ -1,12 +1,30 @@
-import React from 'react'
+import React, {useState, useEffect} from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {Row, Col, Image, ListGroup, Card, Button, ListGroupItem} from 'react-bootstrap';
 import Rating from '../components/Rating';
-import products from '../products';
+import axios from 'axios';
+//import products from '../products';  || Don't need this anymore since we are getting our data from api
 
-const ProductScreen = ({match}) => {
-    const {id} = useParams();
-    const product = products.find((p) => p._id === id)
+
+const ProductScreen = () => {
+    const {id} = useParams();//returns the number of the product id
+    /*const product = products.find((p) => p._id === id)   || no need since we are fetching data from backend*/
+    
+    const [product, setProduct] = useState({}); //default value is an empty object because product is an object.
+    
+    useEffect(() => 
+    {
+        const fetchProduct = async() =>
+        {
+          const {data} = await axios.get(`/api/products/${id}`);
+    
+          setProduct(data); 
+        }
+    
+        fetchProduct();
+    
+    }, [id]);
+
   return (
     <>
        <Link className='btn btn-dark my-3' to='/'>Go Back</Link>
