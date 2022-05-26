@@ -7,6 +7,8 @@ import dotenv from 'dotenv';
 import express from 'express';
 //import products from './data/products.js';  we don't need this anymore since we are connecting to MongoDB atlas.
 import connectDB from './config/db.js';
+import productRoutes from './routes/productRoutes.js';
+import {notFound, errorHandler} from './middleware/errorMiddleWare.js';
 
 dotenv.config();
 connectDB();
@@ -17,14 +19,11 @@ app.get('/', (req, res) => {
     res.send("API is running...");
 });
 
-app.get('/api/products', (req, res) => {
-   res.json(products);
-});
+app.use('/api/products', productRoutes);
 
-app.get('/api/products/:id', (req, res) => { //get a single product instead of whole thing
-    const product = products.find(p => p._id === req.params.id);
-    res.json(product);
- });
+app.use(notFound);
+
+app.use(errorHandler); //this is error middleware.
 
 const PORT = process.env.PORT || 5000; //accessing the variable declared in .env
 const NODE_ENV = process.env.NODE_ENV;
