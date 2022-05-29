@@ -1,7 +1,7 @@
-import React, {useEffect} from 'react'
-import { Link, useParams } from 'react-router-dom'
+import React, {useEffect, useState} from 'react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector} from 'react-redux';
-import {Row, Col, Image, ListGroup, Card, Button, ListGroupItem} from 'react-bootstrap';
+import {Row, Col, Image, ListGroup, Card, Button, ListGroupItem, FormControl} from 'react-bootstrap';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 import Rating from '../components/Rating';
@@ -10,10 +10,11 @@ import { listProductDetails } from '../actions/productActions';
 //import products from '../products';  || Don't need this anymore since we are getting our data from api
 
 
-const ProductScreen = () => {
-
+const ProductScreen = (history) => {
+    const [qty, setQty] = useState(1);
     const dispatch = useDispatch();
     const {id} = useParams();//returns the number of the product id
+    const navigate = useNavigate();
     /*const product = products.find((p) => p._id === id)   || no need since we are fetching data from backend*/
     
     //const [product, setProduct] = useState({}); //default value is an empty object because product is an object.
@@ -36,6 +37,12 @@ const ProductScreen = () => {
         dispatch(listProductDetails(id));
     
     }, [dispatch, id]);
+
+    //usually put the handlers before the useEffect
+    const addToCartHandler = () =>
+    {
+        navigate(`/cart/${id}?qty=${qty}`); //the push method adds new items to the end of an array.
+    }
 
   return (
     <>
@@ -86,8 +93,26 @@ const ProductScreen = () => {
                                   </Col>
                               </Row>
                           </ListGroupItem>
+
+                          {product.countInStock > 0 && (
+                              <ListGroupItem>
+                                  <Row>
+                                      <Col>
+                                        Qty
+                                      </Col>
+                                      <Col>
+                                        <FormControl as='select' onChange={e => {setQty(e.target.value)}}>
+                                            {[...Array(product.countInStock).keys()].map(x => (
+                                                <option key={x + 1} value={x+1}> {x+1} </option> //just adding 1 so value doesn't start at 0
+                                            ))}
+                                        </FormControl>
+                                      </Col>
+                                  </Row>
+                              </ListGroupItem>
+                          )}
+
                           <ListGroupItem>
-                              <Button className='btn-block' type='button' disabled={product.countInStock === 0}>
+                              <Button className='btn-block' type='button' disabled={product.countInStock === 0} onClick={addToCartHandler}>
                                   Add To Cart
                               </Button>
                           </ListGroupItem>
