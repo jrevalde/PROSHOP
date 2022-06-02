@@ -21,6 +21,8 @@ export const addToCart = (id, qty) => async (dispatch, getState) => //we want to
     localStorage.setItem('cartItems', JSON.stringify(getState().cart.cartItems)); //We can only save strings in local storage.
 }
 
+
+
 export const removeFromCart = (id) => (dispatch, getState) =>
 {
     dispatch({
